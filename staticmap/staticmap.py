@@ -170,7 +170,7 @@ def _simplify(points, tolerance=11):
 
 
 class StaticMap:
-    def __init__(self, width, height, padding_x=0, padding_y=0, url_template="http://a.tile.komoot.de/komoot-2/{z}/{x}/{y}.png", tile_size=256, tile_request_timeout=None, headers=None, reverse_y=False, background_color="#fff"):
+    def __init__(self, width, height, padding_x=0, padding_y=0, url_template="http://a.tile.komoot.de/komoot-2/{z}/{x}/{y}.png", tile_size=256, tile_request_timeout=None, headers=None, reverse_y=False, background_color="#fff",fixzoom=0):
         """
         :param width: map width in pixel
         :type width: int
@@ -202,6 +202,7 @@ class StaticMap:
         self.request_timeout = tile_request_timeout
         self.reverse_y = reverse_y
         self.background_color = background_color
+        self.fixzoom=fixzoom
 
         # features
         self.markers = []
@@ -220,11 +221,15 @@ class StaticMap:
         """
         self.lines.append(line)
 
-    def add_marker(self, marker):
+    def add_marker(self, marker, maxmarkers=0):
         """
         :param marker: marker to draw
         :type marker: IconMarker or CircleMarker
         """
+        if  (maxmarkers>0):
+            while len(self.markers)>maxmarkers:
+                #print(len(self.markers),'vs',maxmarkers,'deleting',self.markers[0] )
+                self.markers.pop(0)
         self.markers.append(marker)
 
     def add_polygon(self, polygon):
@@ -335,7 +340,11 @@ class StaticMap:
                 continue
 
             # we found first zoom that can display entire extent
-            return z
+            if self.fixzoom==0:
+                return z
+            else:
+                return self.fixzoom
+            #return z
 
         return ValueError("map dimension (width = {self.width}px, height = {self.height}px, padding = {self.padding}) is too small for given lines".format(self=self))
 
