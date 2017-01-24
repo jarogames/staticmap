@@ -232,6 +232,16 @@ class StaticMap:
                 self.markers.pop(0)
         self.markers.append(marker)
 
+        
+    def remove_last_marker(self):
+        """
+        :param marker: marker to draw
+        :type marker: IconMarker or CircleMarker
+        """
+        if  (len(self.markers)>0):
+                self.markers.pop(-1)
+#        self.markers.append(marker)
+
     def add_polygon(self, polygon):
         """
         :param polygon: polygon to be drawn
